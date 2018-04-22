@@ -1,0 +1,2 @@
+list_gorod=`FRENCH SOUTHERN TERRITORIES|TF|STAS|
+`;

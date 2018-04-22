@@ -1,0 +1,19 @@
+list_gorod=`GHANA|GH|WSAF|
+Accra|ACC|GH|
+Ada|ADA|GH|
+Aura|AUR|GH|
+Axim|AXI|GH|
+Cape Coast|CCT|GH|
+Keta|KIT|GH|
+Kotoka|KTR|GH|
+Kumasi|KMS|GH|
+Legon-Accra|LEG|GH|
+Saltpond|SPD|GH|
+Sekondi|SEK|GH|
+Shama|SHA|GH|
+Sunyani|NYI|GH|
+Takoradi|TKD|GH|
+Tamale|TML|GH|
+Tema|TEM|GH|
+Winneba|WEA|GH|
+`;

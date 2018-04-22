@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style>
+#pan1,#pan2,#id_text1,#id_text2{width:49%;border:1px solid coral;}
+#pan1,#id_div01{float:left}
+#pan2,#id_div02{float:right}
+#id_div01,#id_div02{width:49%; height:15em; border: 1px solid red; overflow-y: scroll;}
+
+</style>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<div id="pan1">страна
+ <input id="id_filtr1" onkeypress="filtr_onchange1()" type="text" value="" placeholder="фильтр: вводите текст" title="фильтр: вводите текст"><input id="id_text1" type="text"><br>
+ <select id="id_select1"></select> <span id="id_info1">()</span>
+</div>
+
+<div id="pan2">город
+ <input id="id_filtr2" onkeypress="filtr_onchange2()" type="text" value="" placeholder="фильтр: вводите текст" title="фильтр: вводите текст"><input id="id_text2" type="text"><br>
+ <select id="id_select2"></select> <span id="id_info2">()</span>
+</div>
+
+<hr>
+
+<script src="xing_lib.js"></script>
+
+<script>
+api_len=0;
+select1=gb_id('id_select1');
+filtr1=gb_id('id_filtr1');
+text1=gb_id('id_text1');
+
+select1.onchange=function(){setTimeout(function(){
+ text1.value=select1.options[select1.selectedIndex].title;
+ filtr2.value=''; filtr_onchange2();
+},0);}
+
+function filtr_onchange1(){setTimeout(function(){var s=filtr1.value;
+ //console.log('='+s);  
+ if(s=='')s='_';
+ run_js('/api_7bd/Strana/'+s+'/len/',ok_len_js1)
+},0)}
+
+function ok_len_js1(){var s='red',k=parseInt(api_len);
+ //console.log('='+api_len);
+ if(k<100)s='green';
+ set_border(filtr1,s);
+gb_id('id_info1').innerHTML='('+k+')';
+s=filtr1.value; if(s=='')s='_';
+if(k<100){ run_js('/api_7bd/Strana/'+s+'/js/',ok_list_js1);}
+}
+
+function ok_list_js1(){
+ api_list=split_str(api_list,1)
+ sel4_fill0(select1,api_list);
+ make_list1(api_list);
+}
+
+function make_list1(m){var i,q,b,mw=0,w;
+ del_el('id_div01');
+ q=add_tag2();q.id="id_div01"; 
+ for(i=0;i<len(m);i++){
+  b=add_tag2(q,'button');b.innerHTML=m[i];
+  b.onclick=function(){text1.value=this.innerHTML; filtr2.value=''; filtr_onchange2();}
+  w=find_xy(b).w;if(w>mw){mw=w;}
+  add_tag2(q,'br')
+ }
+ q=que('#id_div01 button');
+ for(i=0;i<len(q);i++)q[i].style.width=mw+'px';
+}
+//------------------------------GOROD---------------
+select2=gb_id('id_select2');
+filtr2=gb_id('id_filtr2');
+text2=gb_id('id_text2');
+
+select2.onchange=function(){setTimeout(function(){
+ text2.value=select2.options[select2.selectedIndex].title;
+},0);}
+
+function filtr_onchange2(){setTimeout(function(){var s=filtr2.value;
+ //console.log('='+s);  
+ if(s=='')s='_';
+ g=''+text1.value+'|||';g=g.split('|')[2]; if(g=='')g='RU';
+ g='/api_7bd/Gorod_'+g+'/'+s+'/len/'//+no_cash();
+log(g)
+ run_js(g,ok_len_js2)
+},0)}
+
+function ok_len_js2(){var s='red',k=parseInt(api_len);
+ console.log('='+api_len);
+ if(k<100)s='green';
+ set_border(filtr2,s);
+gb_id('id_info2').innerHTML='('+k+')';
+s=filtr2.value; if(s=='')s='_';
+ g=''+text1.value+'|||';g=g.split('|')[2]; if(g=='')g='RU';
+ g='/api_7bd/Gorod_'+g+'/'+s+'/js/'
+log(g)
+if(k<100){ run_js(g,ok_list_js2);}
+}
+
+function ok_list_js2(){
+ api_list=split_str(api_list,1)
+ sel4_fill0(select2,api_list);
+ make_list2(api_list);
+}
+
+function make_list2(m){var i,q,b,mw=0,w;
+ del_el('id_div02');
+ q=add_tag2();q.id="id_div02"; 
+ for(i=0;i<len(m);i++){
+  b=add_tag2(q,'button');b.innerHTML=m[i];
+  b.onclick=function(){text2.value=this.innerHTML;}
+  w=find_xy(b).w;if(w>mw){mw=w;}
+  add_tag2(q,'br')
+ }
+ q=que('#id_div02 button');
+ for(i=0;i<len(q);i++)q[i].style.width=mw+'px';
+}
+
+filtr1.value='';
+filtr_onchange1();
+</script>
+
+

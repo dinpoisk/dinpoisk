@@ -1,0 +1,41 @@
+list_gorod=`CENTRAL AFRICAN REPUBLIC|CF|MDAF|
+Alindao|ALI|CF|
+Baboua|BAB|CF|
+Bakouma|BMF|CF|
+Bambari|BBY|CF|
+Bangassou|BGU|CF|
+Bangui|BGF|CF|
+Baoro|BAO|CF|
+Batangafo|BTG|CF|
+Berberati|BBT|CF|
+Birao|IRO|CF|
+Boda|BOD|CF|
+Bossangoa|BSN|CF|
+Bossembele|BEM|CF|
+Bouar|BOP|CF|
+Bouca|BCF|CF|
+Bozoum|BOZ|CF|
+Bria|BIV|CF|
+Carnot|CRF|CF|
+Dekoa|DEK|CF|
+Gordil|GDI|CF|
+Gounda|GDA|CF|
+Grimari|GRI|CF|
+Kaga Bandoro|KAB|CF|
+Kawadjia|KWD|CF|
+Kembe|KEM|CF|
+Koumala|KOL|CF|
+MBaiki|MKI|CF|
+Mobaye|MOB|CF|
+Mongoumba|MON|CF|
+Ndele|NDL|CF|
+Nola|NOL|CF|
+Obo|OBO|CF|
+Ouadda|ODA|CF|
+Ouanda Djalle|ODJ|CF|
+Paoua|PAO|CF|
+Rafai|RFA|CF|
+Sibut|SIB|CF|
+Yalinga|AIG|CF|
+Zemio|IMO|CF|
+`;

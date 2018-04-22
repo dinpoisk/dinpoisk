@@ -1,0 +1,9 @@
+list_gorod=`MONTENEGRO|ME|STEU|
+Hercegnovi|HNO|ME|
+Ivangrad|IVG|ME|
+Kotor|KOT|ME|
+Podgorica|TGD|ME|
+Tivat|TIV|ME|
+Zabljak|ZBK|ME|
+Zelenika|ZEL|ME|
+`;

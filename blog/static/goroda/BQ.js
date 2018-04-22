@@ -1,0 +1,2 @@
+list_gorod=`BONAIRE SINT EUSTATUS AND SABA|BQ|CARB|
+`;

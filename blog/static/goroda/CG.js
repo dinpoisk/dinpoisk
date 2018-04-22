@@ -1,0 +1,29 @@
+list_gorod=`CONGO|CG|MDAF|
+Betou|BTB|CG|
+Boundji|BOE|CG|
+Brazzaville|BZV|CG|
+Djambala|DJM|CG|
+Djeno Terminal|DJE|CG|
+Epena|EPN|CG|
+Ewo|EWO|CG|
+Gamboma|GMM|CG|
+Impfondo|ION|CG|
+Kelle|KEE|CG|
+Kindamba|KNJ|CG|
+Lague|LCO|CG|
+Lekana|LKC|CG|
+Loubomo|DIS|CG|
+Makabana|KMK|CG|
+Makoua|MKJ|CG|
+Mbinda|MBI|CG|
+Mossaka|MOS|CG|
+Mossendjo|MSX|CG|
+Mouyondzi|MUY|CG|
+Nkayi|NKY|CG|
+Okoyo|OKG|CG|
+Ouesso|OUE|CG|
+Oyo|OYO|CG|
+Pointe Noire|PNR|CG|
+Souanke|SOE|CG|
+Zanaga|ANJ|CG|
+`;

@@ -1,0 +1,31 @@
+list_gorod=`GREENLAND|GL|WSEU|
+Aasiaat|JEG|GL|
+Angmagssalik|AGM|GL|
+Arsuk|JRK|GL|
+Christianshaab|JCH|GL|
+Daneborg|DAN|GL|
+Dundas|DUN|GL|
+Faeringehavn|FNH|GL|
+Fredrikshaab|GFR|GL|
+Godthaab|GOH|GL|
+Gronnedal|JGR|GL|
+Holsteinsborg|JHS|GL|
+Ivigtut|IUT|GL|
+Jakobshavn|JAV|GL|
+Julianehaab|JJU|GL|
+Kulusuk|KUS|GL|
+Mesters Vig|MRG|GL|
+Nanortalik|JNN|GL|
+Narsaq|JNS|GL|
+Narsarsuaq|UAK|GL|
+Neerlerit Inaat|CNP|GL|
+Pituffik|THU|GL|
+Qaanaaq|NAQ|GL|
+Qeqertarsuaq|JGO|GL|
+Scoresbysund|OBY|GL|
+Stromfjord|SFJ|GL|
+Sukkertoppen|JSU|GL|
+Tovkusoak|TOV|GL|
+Upernavik|JUV|GL|
+Uummannaq|UMD|GL|
+`;

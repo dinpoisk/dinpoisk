@@ -1,0 +1,21 @@
+list_gorod=`MONGOLIA|MN|ESAS|
+Altai|LTI|MN|
+Arvaikheer|AVK|MN|
+Baruun Urt|UUN|MN|
+Bayankhongor|BYN|MN|
+Bulgan|UGA|MN|
+Choibalsan|COQ|MN|
+Dalanzadgad|DLZ|MN|
+Erdenet|ERT|MN|
+Kharkhorin|KHR|MN|
+Khovd|HVD|MN|
+Khujirt|HJT|MN|
+Mandalgobi|MXW|MN|
+Moron|MXV|MN|
+Tsetserleg|TSZ|MN|
+Ulaanbaatar|ULN|MN|
+Ulaangom|ULO|MN|
+Ulgit|ULG|MN|
+Uliastai|ULZ|MN|
+Underkhaan|UNR|MN|
+`;
