@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+url:<input id="id_t1" type="text" value="http:\\ya.ru"></input><br>
+only header:<input id="id_t2" type="checkbox"></input><br>
+<button onclick="go()">go</button>
+<hr>
+<input id="id_o1"></input><br>
+<textarea id="id_o2" cols="80" rows="5"></textarea><br>
+<textarea id="id_o3" cols="90" rows="3"></textarea><br>
+<button onclick="var o=gb_id('id_o3');o.value=base16w1251_to_jsstr(o.value)">base16w1251_to_jsstr</button>
+<script src="xing_lib.js"></script>
+<script>
+url0='';
+head0='';
+cont0='';
+
+function go(){
+ url0='';
+ head0='';
+ cont0='';
+
+ var s=''+gb_id('id_t1').value;
+ if(l_simv(s,7)=='http://' || l_simv(s,8)=='https://'){s=s}
+ else{s='http://'+s;}
+ n=99999; //max size 100kb
+ if(gb_id('id_t2').checked)n=0;
+ run_js('/any_url/'+n+'/'+s,ok_run_js);
+}
+
+function ok_run_js(){
+ gb_id('id_o1').value=url0;
+ gb_id('id_o2').value=head0;
+ gb_id('id_o3').value=cont0;
+}
+
+function base16w1251_to_jsstr(s){ //16bit
+var k,c,s1,i,r='',m={};
+ s1='АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя'; //35=#
+ for(i=0;i<192;i++){
+   c=String.fromCharCode(i);
+  if(i<32)c='#'; //#
+  if(i==10 || i==13){c='\n';} //\n
+  if(i==9){c='\t';} //\t
+  m[i]=c;
+  }
+ for(i=0;i<len(s1);i++){m[192+i]=s1.charAt(i);}
+ var m0=base16_to_mas8(s);
+ //замена в 1 проход 35 # - не лат 32-128+ рус 
+ for(i=0;i<len(m0);i++){c=m[m0[i]]; if(c==undefined)c='#';r+=c;}
+ return r;
+}
+function base16_to_mas8(s){var i,m=[];
+ for(i=0;i<len(s);i=i+2){m.push(parseInt(s.substring(i,i+2),16))}
+ return m;
+}
+</script>

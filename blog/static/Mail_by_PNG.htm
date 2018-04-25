@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<style>
+#id_can1{position: absolute;top: -9999px;}
+</style>
+
+<input id="id_i1" type="text" value="1.png"></input> ___
+<a href="#" id="id_a1" onclick="dload()" download="1.png"> txt2png</a><br>
+<textarea id="id_t1" cols="80" rows="15"></textarea>
+<hr>
+<canvas id='id_can1'></canvas>
+<a href="#" onclick="png2txt()"> png2txt</a> ___
+
+
+
+<script>
+function log(s){console.log(s)}
+
+function dload(){
+ var D=window.document;
+ var canv1=D.getElementById("id_can1"); 
+ var cont1=canv1.getContext('2d');
+
+ var i1=D.getElementById('id_i1');
+ var t1=D.getElementById('id_t1');
+ var m=jsstr_to_mas8(''+t1.value);
+ while(len(m)%3!=0){m.push(0);}
+ var w=len(m)/3;
+ canv1.width=w;  canv1.height=1;
+
+ var b=cont1.createImageData(w,1);
+ var k=0;
+ for(i=0;i<len(m);i=i+3){
+  b.data[k++]=m[i+0];
+  b.data[k++]=m[i+1];
+  b.data[k++]=m[i+2];
+  b.data[k++]=255;}  //0 1 2 3    1600+400б много а с прозр. цвета искажает.
+//кароче надо самому этот пнг делать или через сервер.
+ cont1.putImageData(b,0,0);
+ log(m)
+ log('>'+len(m));
+ var o=document.getElementById("id_a1"); 
+ o.download=i1.value; //"2.png";
+ o.href=canv1.toDataURL("image/png").replace(/^data:image\/[^;]/,'data:application/octet-stream');
+}
+//250x250x4 100x1
+function len(s){return s.length;}
+function hex2(d){var h='0123456789ABCDEF',lo=d%16,hi=(d-lo)/16;return ''+h.charAt(hi)+h.charAt(lo);}
+
+function jsstr_to_mas8(s){// строку16 -> массив чисел
+ var i,m=[],k;
+ for(i=0;i<len(s);i++){
+  k=s.charCodeAt(i); 
+  m.push(k & 255)    //lo
+  m.push((k>>8)&255) //hi
+ }
+ return m;
+} 
+
+function mas8_to_jsstr(m){//массив чисел в строку16
+ var s='';
+ if(len(m)%2==1) m.push(0)
+ for(var i=0;i<len(m);i=i+2){s+=String.fromCharCode(m[i]+m[i+1]*256);
+ }
+ return s;
+} 
+
+
+function png2txt(){ 
+ var D=window.document;
+ var i1=D.getElementById('id_i1');
+ var t1=D.getElementById('id_t1');
+ var im1=new Image;
+ im1.onload=function(){
+
+ var canv1=D.getElementById('id_can1');
+ var im2=D.getElementById('id_m1');
+ var w=im1.width;
+ canv1.width=w+1;
+
+ var cont1=canv1.getContext('2d');
+ cont1.drawImage(im1,0,0)
+
+ var p=cont1.getImageData(0,0,w,1).data;
+ var k=0;m=[];
+  for(var i=0;i<len(p);i=i+4){m.push(p[i]);m.push(p[i+1]);m.push(p[i+2]);}
+  while(m[len(m)-1]==0)m.pop();
+  log('>'+len(m));
+ s=mas8_to_jsstr(m);
+ t1.value=''+s;
+ t1.focus();
+ };
+
+ im1.src=''+i1.value;  //1.png
+ im1.id='id_im1';
+
+}
+</script>

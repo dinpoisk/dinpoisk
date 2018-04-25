@@ -2,12 +2,58 @@
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponse, HttpResponseRedirect
 from PIL import Image
-import xlsxwriter
-import time
-import random
-from django import forms
 from io import BytesIO
+import xlsxwriter
+import time, random, poplib, smtplib, email, base64
+from django import forms
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.message import EmailMessage
+from email.parser import BytesParser
+from email import policy
 
+def send_by_mail_ru(toAdr,zag,text):
+ fromAdr = "adm_ships_cargo@mail.ru" 
+ myPass = "a769-227-0751"
+
+ msg = MIMEMultipart()
+ msg['From'] = fromAdr
+ msg['To'] = toAdr
+ msg['Subject'] = zag #"Привет от питона"
+ body = text #"Это пробное сообщение"
+ msg.attach(MIMEText(body,'plain'))
+ try:
+   server1=smtplib.SMTP_SSL('smtp.mail.ru',465)
+   server1.login(fromAdr,myPass)
+   server1.sendmail(fromAdr,toAdr,msg.as_string())
+   server1.quit()
+   return 1
+ except:
+   return -1
+#end
+
+def decode_mail(s):
+  ss=''
+  msg=BytesParser(policy=policy.default).parsebytes(s2b(s))
+  ss+='from: '+msg['from']+'\n'#  '2@2.2'
+  ss+='subject: '+msg['subject']+'\n'
+  ss+='date: '+msg['date']+'\n'
+  ss+='--------------------------\n'
+  ss+=msg.get_body(preferencelist=('plain', 'html')).get_content()
+  ss+='\n==================================================\n'
+  return ss
+#end
+
+def send_file_by_mail_(to0,tema0,file0,from0,myPass):
+  msg = EmailMessage()
+  with open(file0) as fp:  msg.set_content(fp.read())
+  msg['Subject']=tema0
+  msg['From']=from0
+  msg['To']=to0
+  with smtplib.SMTP_SSL('smtp.mail.ru',465) as s:
+    s.login(from0,myPass)
+    s.send_message(msg)
+#end
 
 def send_email1(subject,message,from_email,to_email):
  # subject=request.POST.get('subject','')
@@ -21,7 +67,63 @@ def send_email1(subject,message,from_email,to_email):
   # In reality we'd use a form class
   # to get proper validation errors.
   return HttpResponse('не все поля заполнены правильно.')
+#end
 
+def get_today():
+ m=['jan','feb','mar','apr','may','jun','jul','aug','sen','okt','nov','dec']
+ return '%s%s%s' % (time.localtime().tm_mday,m[time.localtime().tm_mon-1],time.localtime().tm_year)
+#end
+def get_mail(s):
+  m=split_str(s.replace(' ','\n'),1)
+  for x in m:
+    k1 = x.find('<')
+    k2 = x.find('@', k1+1)
+    k3 = x.find('>', k2+1)
+    if k2 > k1:
+      if k3 > k2:
+        return x[k1+1:k3]
+  return s.strip()
+#end
+def decode_base64_utf8(s):
+  b=s2b(s);  b = base64.decodebytes(b)
+  return b2su(b)
+#end
+def read_mail_ru(login,pw,del_mail=0):
+  today = get_today()
+  server = "pop.mail.ru"# "pop.att.yahoo.com"
+  try:
+    box = poplib.POP3_SSL(server, 995) # в принципе, если порт 995, то его можно и не указывать
+    print('ok pop3 login=%s pass=%s' %(login,pw))
+    box.user(login); box.pass_(pw.strip())
+    print('ok login')
+    response, lst, octets = box.list()
+  except: print('err pop3'); return -1
+
+  s=today+' '+login+' messages: '+n2s(len(lst))+' '+b2s(response)+'\n'
+  write_file('mail_log', s, 2)
+  print(s)
+  for msgnum, msgsize in [i.split() for i in lst]:
+    n=int(msgnum)
+    print(n,int(msgsize))
+    (resp, lines, octets) = box.retr(n)
+    bb = b'\n'.join(lines) + b'\n'
+    ss=''
+    msg=BytesParser(policy=policy.default).parsebytes(bb)
+    ss+='from: '+msg['from']+'\n'#  '2@2.2'
+    ss+='subject: '+msg['subject']+'\n'
+    ss+='date: '+msg['date']+'\n'
+    ss+='--------------------------\n'
+    ss+=msg.get_body(preferencelist=('plain','html')).get_content()
+    ss+='\n==================================================\n'
+    sm=get_mail(msg['from'])
+    f=login+'\\'+str(n)+'_'+today+'('+sm+')'
+    write_file(f+'.txt',ss,2) #декодиравал простые
+    #html теги удалить.    value input? script?
+    write_file(f+'.bin',bb,2) #+сохр как есть
+    if del_mail!=0: box.dele(n) # если надо - удаляем с сервера письмо
+  #end-for
+  box.quit()
+  #end
 
 # -----lib-------------------
 def dump(o):
@@ -31,7 +133,6 @@ def dump(o):
     print(s)
     return s
 #end
-
 
 def exist_file(f):
   try:
@@ -52,26 +153,45 @@ def read_file(f, kodirovka=''):
   if kodirovka == '': return r #binary!
   if r[0:3] == b'\xEF\xBB\xBF' : r=r[3:] #del BOM
   r=str(r,kodirovka) #1251 utf-8
+  #if r_simv(r)!='\n': r+='\n'
   return split_str(r) #массив строк
 #end
 
-def write_file(f,b,f_rewrite=1): #перезаписывать старый
-  if f_rewrite!=1 and exist_file(f): return 0
-  f0 = open(f,'wb')
+def write_file(f,b,f_rewrite=0): #1-не перезаписывать старый 2-append
+  if f_rewrite==1 and exist_file(f): return -1
+  if f_rewrite==2: f0 = open(f,'ab')
+  else: f0 = open(f,'wb')
   if type(b) == bytes: r = f0.write(b)
   if type(b) == str : b1=bytes(b,'utf-8'); r = f0.write(b1)
   f0.close()
   return r
 #end
 
-def inStr(s0,s1): return (s0.find(s1)>=0)
+def su2b(s): return bytes(s,'utf-8')
+def b2su(b): return str(b,'utf-8')
+def s2b(s): #//0-255 no rus
+  m = []
+  for c in s: m.append(ord(c)%256)
+  return bytes(m)
+#end
+def b2s(b):
+  ss=''
+  for x in b: ss += chr(x)
+  return ss
+#end
+def n2s(a):
+  if type(a) == int: return str(a)
+  try: return str(a)
+  except: return ''
+#end
+def inStr(s0, s1): return (s0.find(s1)>=0)
 
 def trim(s): return s.strip()
 
 def hex2(n):
- h = hex(n % 256); m = h[2:4]
- if len(m) < 2: m = '0' + m
- return m
+  h = hex(n % 256); m = h[2:4]
+  if len(m) < 2: m = '0' + m
+  return m
 #end
 
 maska_09 = '0123456789'
@@ -224,8 +344,8 @@ def filtr_31(t): #не надо добавлять \n в строку и мен�
 #end
 # делит  на  строки  текст  любой  ОС win=\r\n  mac=\n=10  linux=\r=13
 def split_str(s,udalit_pustye_stroki=0):
-  ss=s+'\n' #баг последней строки
-  ss=norma_n(ss)
+  ss=norma_n(s)
+  if r_simv(ss)!='\n':ss+='\n' #баг последней строки
   ss=filtr_31(ss)
   m=ss.split('\n')
   if udalit_pustye_stroki==0: return m #no null массив строк точно
@@ -374,7 +494,7 @@ def modif_form(f, pole0, label0='', help_text0='', title0='', placeholder0=''):
     )
 
 
-def txt2png(s, f=r'c:\cap\1.png'):
+def txt2png_rgb(s, f='c:\\cap\\1.png'):
     le = len(s)
     if le % 3 == 1: s = s + '  '
     if le % 3 == 2: s = s + ' '
@@ -390,7 +510,7 @@ def txt2png(s, f=r'c:\cap\1.png'):
     img.putdata(r)
     img.save(f)
     del img
-    r = HttpResponse(open(r'c:\cap\1.png', 'rb'), content_type='image/png')
+    r = HttpResponse(open('c:\\cap\\1.png', 'rb'), content_type='image/png')
     r['Content-Disposition'] = 'attachment;filename="1.png"'
     return r
 #end
@@ -514,3 +634,42 @@ def excel_tabl(t,z=1):
 
     r.write(pdf)
     return r
+
+def txt2png(s0,file0=''):
+  s=s0;r=[] # 122-32-255-66-77
+  if filtr_cut(s,'1234567890,-\n\r')==s:
+    s=s.replace(',','\n')
+    s=s.replace('-','\n') # + = ; \n
+    m=split_str(s,1)
+    for x in m: r.append(int(x))
+  else:
+    r=list(bytes(s0,'1251'))
+  #end-if
+
+  while len(r)%3!=0: r.append(0)
+  le=int(len(r)/3)
+  print(le)
+  rr=[]
+  for i in range(0,le):
+      rr.append((r[i*3+0],r[i*3+1],r[i*3+2]))
+  #end-for
+
+  img=Image.new('RGB',(le,1))
+  img.putdata(rr)
+  if file0!='':
+      img.save(file0,format="png")
+      del img
+      return 1
+  #end-if
+
+  buffer=BytesIO()
+  img.save(buffer,format="png")
+  del img
+  pdf=buffer.getvalue()
+  buffer.close()
+  response=HttpResponse(content_type='image/png')
+  response['Content-Disposition']='attachment;filename="1.png"'
+  response.write(pdf)
+
+  return response
+#end
