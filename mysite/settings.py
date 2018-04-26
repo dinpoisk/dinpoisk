@@ -25,8 +25,7 @@ SECRET_KEY = '*^y_otc3n29hf4&zw(wu=uu8(-tpba#g(+ku%6lp44zu!+&r5r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['dinpoisk.pythonanywhere.com','127.0.0.1']
 
 # Application definition
 

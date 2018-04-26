@@ -11,6 +11,7 @@ from email.mime.text import MIMEText
 from email.message import EmailMessage
 from email.parser import BytesParser
 from email import policy
+from email.policy import SMTP
 
 def send_by_mail_ru(toAdr,zag,text):
  fromAdr = "adm_ships_cargo@mail.ru" 
@@ -31,7 +32,26 @@ def send_by_mail_ru(toAdr,zag,text):
  except:
    return -1
 #end
+def send_file_from_mail_ru(toAdr,zag,path0):
+ fromAdr = "adm_ships_cargo@mail.ru"
+ myPass = "a769-227-0751"
 
+ msg = EmailMessage()
+ msg['From'] = fromAdr
+ msg['To'] = toAdr
+ msg['Subject'] = zag #"Привет от питона"
+ msg.preamble='file='+path0
+ with open(path0,'rb')as fp:
+   msg.add_attachment(fp.read(),maintype='application',subtype='octet-steam',filename=path0)
+ #with open('c:\\cap\\1.msg','wb')as fp:   fp.write(msg.as_bytes(policy=SMTP))
+ try:
+   with smtplib.SMTP_SSL('smtp.mail.ru',465) as s:
+     s.login(fromAdr,myPass)
+     s.send_message(msg)
+   return 1
+ except:
+   return -1
+#end
 def decode_mail(s):
   ss=''
   msg=BytesParser(policy=policy.default).parsebytes(s2b(s))
@@ -44,15 +64,19 @@ def decode_mail(s):
   return ss
 #end
 
-def send_file_by_mail_(to0,tema0,file0,from0,myPass):
+def send_utf8file_by_mail_ru(to0,tema0,file0,from0,myPass):
   msg = EmailMessage()
   with open(file0) as fp:  msg.set_content(fp.read())
   msg['Subject']=tema0
   msg['From']=from0
   msg['To']=to0
-  with smtplib.SMTP_SSL('smtp.mail.ru',465) as s:
-    s.login(from0,myPass)
-    s.send_message(msg)
+  #with open('c:\\cap\\2.msg','wb')as fp:    fp.write(msg.as_bytes(policy=SMTP))
+  try:
+    with smtplib.SMTP_SSL('smtp.mail.ru',465) as s:
+      s.login(from0,myPass)
+      s.send_message(msg)
+      return 1
+  except: return -1
 #end
 
 def send_email1(subject,message,from_email,to_email):
@@ -189,9 +213,10 @@ def inStr(s0, s1): return (s0.find(s1)>=0)
 def trim(s): return s.strip()
 
 def hex2(n):
-  h = hex(n % 256); m = h[2:4]
-  if len(m) < 2: m = '0' + m
-  return m
+  h = hex(n % 256)
+  s = h[2:4]
+  if len(s) == 1: s='0'+s
+  return s
 #end
 
 maska_09 = '0123456789'
@@ -517,7 +542,6 @@ def txt2png_rgb(s, f='c:\\cap\\1.png'):
 
 
 def te45(p='',f=''):
-  #p=r'C:\_gosha-kanada\ships_cargo\blog\static\bd'
   #f=p+'\list_strana.js'
 
   m1=read_file(f,'utf-8')
@@ -553,7 +577,7 @@ def sort_dict(d):
 #
 
 def tes5():
-  p=r'C:\_gosha-kanada\ships_cargo\blog\static\goroda'
+  p=''
   #f=p+'\\list_strana.js'
   f=p+'\\all'
   mf=read_file(f,'utf-8')
@@ -584,7 +608,7 @@ def tes5():
   write_file(p+'\\f1',s)
 # tes5
 
-def is_num(s): #проверка что число
+def is_num(s): #проверка что в строке число
   return filtr_09(s)==s
 
 def in_mas(t,mas): # поиск в строчном массиве 1+2+3
@@ -672,4 +696,32 @@ def txt2png(s0,file0=''):
   response.write(pdf)
 
   return response
+#end
+
+def base16w1251_to_str(s): #//16bit   lat+rus!
+ m8=[];k=0;c='';s1='';i=0;ss='';m={} #var
+ s1='АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя' #//35=#
+ for i in range(0,192):
+   c=chr(i)
+   if i<32: c='#'
+   if i==10 or i==13: c='\n'
+   if i==9: c='\t'
+   m[i]=c
+ #end-for
+ for i in range(0,len(s1),1): m[192+i]=s1[i]
+ m8=base16_to_mas8(s)
+ #//замена в 1 проход 35 # - не лат 32-128+ рус
+ ss=''
+ for i in range(0,len(m8),1):
+   c='#'
+   try: c=m[m8[i]]
+   except: pass
+   ss+=c
+ #enf-for
+ return ss
+#end
+def base16_to_mas8(s):
+ i=0;m8=[] #var
+ for i in range(0,len(s),2): m8.append(int(s[i:i+2],16))
+ return m8
 #end

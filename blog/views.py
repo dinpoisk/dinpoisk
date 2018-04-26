@@ -230,28 +230,36 @@ def add_bd_from_files2():
   return 1
 
 
-def any_url(request, pk, max_size):
-  h = requests.head(pk)
+def any_url(request, url0, max_size):
+  url0=mylib.base16w1251_to_str(url0)
+  print('url0=',url0)
+  h = requests.head(url0)
   hh = h.headers
   sz = hh['content-length']
   h = ''
   for i in hh: h = h+i+'|' + hh[i]+'\n'
   h=h.replace("`","<<obr_kav>>")
-  s='url0=`'+pk+'`;\n'+'head0=`'+h+'`;\n'
+  s='url0=`'+url0+'`;\n'+'head0=`'+h+'`;\n'
   if max_size=='0': return HttpResponse(s) #only header
+  if max_size=='1':
+    b=requests.get(url0).content
+    p = os.path.abspath(os.path.dirname(__file__))+ '/static/1.bin'
+    mylib.write_file(p,b)
+    mylib.send_file_from_mail_ru('ded-moroz99@inbox.ru','privet',p)
+    return ok('/')
   cont0=''
   if int(sz) < int(max_size):
-    x = requests.get(pk)
+    x = requests.get(url0)
     cont0 = x.content
-    if type(cont0) == bytes :
-      try:  cont0 = str(cont0,'utf-8');cont0=cont0.replace("`","<<obr_kav>>")
-      except: cont0 = b2base16(cont0)
+    if type(cont0) == bytes:
+      try:  cont0 = str(cont0, 'utf-8');cont0=cont0.replace("`","<<obr_kav>>")
+      except: cont0 = b_to_base16(cont0)
     #endif
   #endif
   return HttpResponse(s+'cont0=`'+cont0+'`;\n')
 #end
 
-def b2base16(b): # FF-коды только
+def b_to_base16(b): # FF-коды только
   ss=''
   for x in b:
     c=hex(int(x))[2:] #0x3 0x55
